@@ -1,9 +1,12 @@
 import { Link } from "@tanstack/react-router"
 import { useIsFetching } from "@tanstack/react-query"
+import { useAtomValue } from "jotai"
+import { useCallback } from "react"
 import type { SourceID } from "@shared/types"
 import { NavBar } from "../navbar"
 import { Menu } from "./menu"
 import { currentSourcesAtom, goToTopAtom } from "~/atoms"
+import { useRefetch } from "~/hooks/useRefetch"
 
 function GoTop() {
   const { ok, fn: goToTop } = useAtomValue(goToTopAtom)
@@ -55,6 +58,9 @@ export function Header() {
         <span className="hidden md:(inline-block)">
           <NavBar />
         </span>
+        <Link to="/api-test" className="ml-4 text-sm text-primary-600 dark:text-primary hover:underline">
+          API Test
+        </Link>
       </span>
       <span className="justify-self-end flex gap-2 items-center text-xl text-primary-600 dark:text-primary h-full">
         <GoTop />

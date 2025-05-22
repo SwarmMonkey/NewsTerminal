@@ -1,8 +1,8 @@
 // API client for interacting with Cloudflare Worker from Vercel frontend
 import { ofetch } from "ofetch"
 
-// Replace with your actual Cloudflare Worker URL once deployed
-const API_BASE_URL = "https://newsnow-api.yourusername.workers.dev"
+// Updated with the actual deployed worker URL
+const API_BASE_URL = "https://newsnow-api.1801.workers.dev"
 
 // Define types for our data
 interface Article {
