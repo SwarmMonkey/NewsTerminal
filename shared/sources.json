@@ -6,7 +6,8 @@
     "home": "https://v2ex.com/",
     "color": "slate",
     "interval": 600000,
-    "title": "最新分享"
+    "title": "Latest Shares",
+    "enTitle": "Latest Shares"
   },
   "v2ex-share": {
     "name": "V2EX",
@@ -14,10 +15,11 @@
     "home": "https://v2ex.com/",
     "color": "slate",
     "interval": 600000,
-    "title": "最新分享"
+    "title": "Latest Shares",
+    "enTitle": "Latest Shares"
   },
   "zhihu": {
-    "name": "知乎",
+    "name": "Zhihu",
     "type": "hottest",
     "column": "china",
     "home": "https://www.zhihu.com",
@@ -25,8 +27,8 @@
     "interval": 600000
   },
   "weibo": {
-    "title": "实时热搜",
-    "name": "微博",
+    "title": "Real-time Trending",
+    "name": "Weibo",
     "type": "hottest",
     "column": "china",
     "home": "https://weibo.com",
@@ -34,17 +36,17 @@
     "interval": 120000
   },
   "zaobao": {
-    "name": "联合早报",
+    "name": "Lianhe Zaobao",
     "type": "realtime",
-    "desc": "来自第三方网站: 早晨报",
+    "desc": "From third-party site: Zaochen Bao",
     "column": "world",
     "home": "https://www.zaobao.com",
     "color": "red",
     "interval": 1800000
   },
   "coolapk": {
-    "title": "今日最热",
-    "name": "酷安",
+    "title": "Today's Hottest",
+    "name": "Coolapk",
     "type": "hottest",
     "column": "tech",
     "home": "https://coolapk.com",
@@ -53,63 +55,69 @@
   },
   "wallstreetcn": {
     "redirect": "wallstreetcn-quick",
-    "name": "华尔街见闻",
+    "name": "Wall Street News",
     "type": "realtime",
     "column": "finance",
     "home": "https://wallstreetcn.com/",
     "color": "blue",
     "interval": 300000,
-    "title": "实时快讯"
+    "title": "Real-time Express",
+    "enTitle": "Real-time Express"
   },
   "wallstreetcn-quick": {
-    "name": "华尔街见闻",
+    "name": "Wall Street News",
     "type": "realtime",
     "column": "finance",
     "home": "https://wallstreetcn.com/",
     "color": "blue",
     "interval": 300000,
-    "title": "实时快讯"
+    "title": "Real-time Express",
+    "enTitle": "Real-time Express"
   },
   "wallstreetcn-news": {
-    "name": "华尔街见闻",
+    "name": "Wall Street News",
     "column": "finance",
     "home": "https://wallstreetcn.com/",
     "color": "blue",
     "interval": 1800000,
-    "title": "最新资讯"
+    "title": "Latest News",
+    "enTitle": "Latest News"
   },
   "wallstreetcn-hot": {
-    "name": "华尔街见闻",
+    "name": "Wall Street News",
     "type": "hottest",
     "column": "finance",
     "home": "https://wallstreetcn.com/",
     "color": "blue",
     "interval": 1800000,
-    "title": "最热文章"
+    "title": "Hottest Articles",
+    "enTitle": "Hottest Articles"
   },
   "36kr": {
     "redirect": "36kr-quick",
-    "name": "36氪",
+    "name": "36Kr",
     "type": "realtime",
     "disable": "cf",
     "column": "tech",
     "home": "https://36kr.com",
     "color": "blue",
     "interval": 600000,
-    "title": "快讯"
+    "title": "Express",
+    "enTitle": "Express"
   },
   "36kr-quick": {
-    "name": "36氪",
+    "name": "36Kr",
     "type": "realtime",
     "disable": "cf",
     "column": "tech",
     "home": "https://36kr.com",
     "color": "blue",
     "interval": 600000,
-    "title": "快讯"
+    "title": "Express",
+    "enTitle": "Express"
   },
   "douyin": {
-    "name": "抖音",
+    "name": "Douyin",
     "type": "hottest",
     "column": "china",
     "home": "https://www.douyin.com",
