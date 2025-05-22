@@ -3,10 +3,11 @@ export default {
   async fetch(request, env) {
     // Set up CORS to allow requests from your Vercel domain
     const corsHeaders = {
-      "Access-Control-Allow-Origin": "https://news-terminal-beta.vercel.app",
+      "Access-Control-Allow-Origin": request.headers.get("Origin") || "https://news-terminal-beta.vercel.app",
       "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
       "Access-Control-Allow-Headers": "Content-Type, Authorization",
       "Access-Control-Max-Age": "86400",
+      "Access-Control-Allow-Credentials": "true",
     }
 
     // Handle CORS preflight requests
