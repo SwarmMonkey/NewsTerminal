@@ -39,8 +39,8 @@ export class Timer {
 
 export const myFetch = $fetch.create({
   timeout: 15000,
-  retry: 0,
-  baseURL: "https://newsnow-api.1801.workers.dev",
+  retry: 1,
+  baseURL: "/api",
 })
 
 export function isiOS() {

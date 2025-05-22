@@ -56,9 +56,19 @@ export const CardWrapper = forwardRef<HTMLElement, ItemsProps>(({ id, isDragging
   )
 })
 
+// Add a type for the API error
+interface ApiError {
+  response?: {
+    status: number
+    data: any
+  }
+  request?: any
+  message?: string
+}
+
 function NewsCard({ id, setHandleRef }: NewsCardProps) {
   const { refresh } = useRefetch()
-  const { data, isFetching, isError } = useQuery({
+  const { data, isFetching, isError, error } = useQuery({
     queryKey: ["source", id],
     queryFn: async ({ queryKey }) => {
       const id = queryKey[1] as SourceID
@@ -106,7 +116,31 @@ function NewsCard({ id, setHandleRef }: NewsCardProps) {
         return response
       } catch (error) {
         console.error(`API error for ${id}:`, error)
-        throw error
+        const apiError = error as ApiError
+        if (apiError.response) {
+          console.error(`Status: ${apiError.response.status}, Data:`, apiError.response.data)
+        }
+        if (apiError.request) {
+          console.error(`No response received, request:`, apiError.request)
+        }
+
+        // Return a fallback response instead of throwing to prevent UI from showing "Failed to load"
+        // At least return a properly formatted empty response
+        const fallbackResponse: SourceResponse = {
+          status: "cache",
+          id,
+          updatedTime: Date.now(),
+          items: [],
+        }
+
+        // If there's cached data, use it instead of an empty array
+        if (cacheSources.has(id)) {
+          console.log(`Using cached data as fallback for failed API request to ${id}`)
+          return cacheSources.get(id)
+        }
+
+        // Otherwise use the empty fallback
+        return fallbackResponse
       }
     },
     placeholderData: prev => prev,
@@ -123,6 +157,13 @@ function NewsCard({ id, setHandleRef }: NewsCardProps) {
   const translatedSourceName = translateText(sources[id].name)
   const translatedSourceTitle = sources[id].title ? translateText(sources[id].title) : ""
   const translatedSourceDesc = sources[id].desc ? translateText(sources[id].desc) : ""
+
+  // Log error details if present
+  useEffect(() => {
+    if (error) {
+      console.error(`Error for source ${id}:`, error)
+    }
+  }, [error, id])
 
   return (
     <>
