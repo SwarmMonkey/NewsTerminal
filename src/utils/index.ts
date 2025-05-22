@@ -40,7 +40,7 @@ export class Timer {
 export const myFetch = $fetch.create({
   timeout: 15000,
   retry: 0,
-  baseURL: "/api",
+  baseURL: "https://newsnow-api.1801.workers.dev",
 })
 
 export function isiOS() {
@@ -110,7 +110,7 @@ const commonTranslations: Record<string, string> = {
   "热门视频": "Hot Videos",
   "排行榜": "Rankings",
   "最新": "Latest",
-  "今日最热": "Today's Hot",
+  "今日热点": "Today's Hot",
   "热点资讯": "Hot News",
   "最热": "Hottest",
 

@@ -1,5 +1,7 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query"
 import type { SourceID, SourceResponse } from "@shared/types"
+import { myFetch } from "~/utils"
+import { cacheSources } from "~/utils/data"
 
 export function useUpdateQuery() {
   const queryClient = useQueryClient()
@@ -25,27 +27,34 @@ export function useEntireQuery(items: SourceID[]) {
     queryFn: async ({ queryKey }) => {
       const sources = queryKey[1]
       if (sources.length === 0) return null
-      const res: SourceResponse[] | undefined = await myFetch("/s/entire", {
-        method: "POST",
-        body: {
-          sources,
-        },
-      })
-      if (res?.length) {
-        const s = [] as SourceID[]
-        res.forEach((v) => {
-          const id = v.id
-          if (!cacheSources.has(id) || cacheSources.get(id)!.updatedTime < v.updatedTime) {
-            s.push(id)
-            cacheSources.set(id, v)
-          }
+      console.log("Fetching entire data from API:", sources)
+      try {
+        const res: SourceResponse[] | undefined = await myFetch("/s/entire", {
+          method: "POST",
+          body: {
+            sources,
+          },
         })
-        // update now
-        update(...s)
+        console.log("API response:", res)
+        if (res?.length) {
+          const s = [] as SourceID[]
+          res.forEach((v) => {
+            const id = v.id
+            if (!cacheSources.has(id) || cacheSources.get(id)!.updatedTime < v.updatedTime) {
+              s.push(id)
+              cacheSources.set(id, v)
+            }
+          })
+          // update now
+          update(...s)
 
-        return res
+          return res
+        }
+        return null
+      } catch (error) {
+        console.error("API fetch error:", error)
+        return null
       }
-      return null
     },
     staleTime: 1000 * 60 * 3,
     retry: false,

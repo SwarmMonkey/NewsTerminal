@@ -1,10 +1,16 @@
 import type { NewsItem, SourceID, SourceResponse } from "@shared/types"
+import sources from "@shared/sources"
+import { delay } from "@shared/utils"
 import { useQuery } from "@tanstack/react-query"
 import { AnimatePresence, motion, useInView } from "framer-motion"
 import { useWindowSize } from "react-use"
 import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from "react"
 import { OverlayScrollbar } from "../common/overlay-scrollbar"
-import { safeParseString, translateText } from "~/utils"
+import { myFetch, safeParseString, translateText } from "~/utils"
+import { cacheSources, refetchSources } from "~/utils/data"
+import { useFocusWith } from "~/hooks/useFocus"
+import { useRefetch } from "~/hooks/useRefetch"
+import { useRelativeTime } from "~/hooks/useRelativeTime"
 
 export interface ItemsProps extends React.HTMLAttributes<HTMLDivElement> {
   id: SourceID
@@ -56,6 +62,7 @@ function NewsCard({ id, setHandleRef }: NewsCardProps) {
     queryKey: ["source", id],
     queryFn: async ({ queryKey }) => {
       const id = queryKey[1] as SourceID
+      console.log(`Fetching data for source: ${id}`)
       let url = `/s?id=${id}`
       const headers: Record<string, any> = {}
       if (refetchSources.has(id)) {
@@ -65,34 +72,42 @@ function NewsCard({ id, setHandleRef }: NewsCardProps) {
         refetchSources.delete(id)
       } else if (cacheSources.has(id)) {
         // wait animation
+        console.log(`Using cached data for source: ${id}`)
         await delay(200)
         return cacheSources.get(id)
       }
 
-      const response: SourceResponse = await myFetch(url, {
-        headers,
-      })
+      try {
+        console.log(`Making API request to: ${url}`)
+        const response: SourceResponse = await myFetch(url, {
+          headers,
+        })
+        console.log(`API response for ${id}:`, response)
 
-      function diff() {
-        try {
-          if (response.items && sources[id].type === "hottest" && cacheSources.has(id)) {
-            response.items.forEach((item, i) => {
-              const o = cacheSources.get(id)!.items.findIndex(k => k.id === item.id)
-              item.extra = {
-                ...item?.extra,
-                diff: o === -1 ? undefined : o - i,
-              }
-            })
+        function diff() {
+          try {
+            if (response.items && sources[id].type === "hottest" && cacheSources.has(id)) {
+              response.items.forEach((item, i) => {
+                const o = cacheSources.get(id)!.items.findIndex(k => k.id === item.id)
+                item.extra = {
+                  ...item?.extra,
+                  diff: o === -1 ? undefined : o - i,
+                }
+              })
+            }
+          } catch (e) {
+            console.error(e)
           }
-        } catch (e) {
-          console.error(e)
         }
+
+        diff()
+
+        cacheSources.set(id, response)
+        return response
+      } catch (error) {
+        console.error(`API error for ${id}:`, error)
+        throw error
       }
-
-      diff()
-
-      cacheSources.set(id, response)
-      return response
     },
     placeholderData: prev => prev,
     staleTime: Infinity,
