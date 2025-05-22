@@ -6,7 +6,7 @@ function ThemeToggle() {
     <li onClick={toggleDark} className="cursor-pointer [&_*]:cursor-pointer transition-all">
       <span className={$("inline-block", isDark ? "i-ph-moon-stars-duotone" : "i-ph-sun-dim-duotone")} />
       <span>
-        {isDark ? "浅色模式" : "深色模式"}
+        {isDark ? "Light Mode" : "Dark Mode"}
       </span>
     </li>
   )
@@ -55,21 +55,21 @@ export function Menu() {
                 ? (
                     <li onClick={logout}>
                       <span className="i-ph:sign-out-duotone inline-block" />
-                      <span>退出登录</span>
+                      <span>Sign Out</span>
                     </li>
                   )
                 : (
                     <li onClick={login}>
                       <span className="i-ph:sign-in-duotone inline-block" />
-                      <span>Github 账号登录</span>
+                      <span>Sign In with Github</span>
                     </li>
                   ))}
               <ThemeToggle />
-              <li onClick={() => window.open(Homepage)} className="cursor-pointer [&_*]:cursor-pointer transition-all">
+              {/* <li onClick={() => window.open(Homepage)} className="cursor-pointer [&_*]:cursor-pointer transition-all">
                 <span className="i-ph:github-logo-duotone inline-block" />
                 <span>Star on Github </span>
-              </li>
-              <li className="flex gap-2 items-center">
+              </li> */}
+              {/* <li className="flex gap-2 items-center">
                 <a
                   href="https://github.com/ourongxing/newsnow"
                 >
@@ -86,7 +86,7 @@ export function Menu() {
                     src="https://img.shields.io/github/forks/ourongxing/newsnow?logo=github"
                   />
                 </a>
-              </li>
+              </li> */}
             </ol>
           </motion.div>
         </div>

@@ -42,27 +42,21 @@ function Refresh() {
 export function Header() {
   return (
     <>
-      <span className="flex justify-self-start">
+      <span className="flex justify-self-start items-center">
         <Link to="/" className="flex gap-2 items-center">
-          <div className="h-10 w-10 bg-cover" title="logo" style={{ backgroundImage: "url(/icon.svg)" }} />
-          <span className="text-2xl font-brand line-height-none!">
-            <p>News</p>
-            <p className="mt--1">
-              <span className="color-primary-6">N</span>
-              <span>ow</span>
-            </p>
-          </span>
+          <div className="h-20 w-20 bg-contain bg-no-repeat" title="logo" style={{ backgroundImage: "url(/NewsTerminal.png)" }} />
+          <div className="flex flex-col justify-center">
+            <p className="text-xl font-brand-title tracking-tight uppercase font-bold whitespace-nowrap leading-tight mb-0">News</p>
+            <p className="text-xl font-brand-title tracking-tight uppercase font-bold whitespace-nowrap leading-tight mt-0">Terminal</p>
+          </div>
         </Link>
-        <a target="_blank" href={`${Homepage}/releases/tag/v${Version}`} className="btn text-sm ml-1 font-mono">
-          {`v${Version}`}
-        </a>
       </span>
-      <span className="justify-self-center">
+      <span className="justify-self-center flex items-center h-full">
         <span className="hidden md:(inline-block)">
           <NavBar />
         </span>
       </span>
-      <span className="justify-self-end flex gap-2 items-center text-xl text-primary-600 dark:text-primary">
+      <span className="justify-self-end flex gap-2 items-center text-xl text-primary-600 dark:text-primary h-full">
         <GoTop />
         <Refresh />
         <Menu />

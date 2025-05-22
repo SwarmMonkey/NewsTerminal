@@ -38,39 +38,39 @@ function words() {
     },
     {
       startAt: dayjs().isSameOrBefore(dayjs().weekday(1)) ? dayjs().weekday(1).subtract(1, "week") : dayjs().weekday(1),
-      regExp: /^(?:周|星期)一(.*)/,
+      regExp: /^(?:周|星期)一|monday(.*)/i,
     },
     {
       startAt: dayjs().isSameOrBefore(dayjs().weekday(2)) ? dayjs().weekday(2).subtract(1, "week") : dayjs().weekday(2),
-      regExp: /^(?:周|星期)二(.*)/,
+      regExp: /^(?:周|星期)二|tuesday(.*)/i,
     },
     {
       startAt: dayjs().isSameOrBefore(dayjs().weekday(3)) ? dayjs().weekday(3).subtract(1, "week") : dayjs().weekday(3),
-      regExp: /^(?:周|星期)三(.*)/,
+      regExp: /^(?:周|星期)三|wednesday(.*)/i,
     },
     {
       startAt: dayjs().isSameOrBefore(dayjs().weekday(4)) ? dayjs().weekday(4).subtract(1, "week") : dayjs().weekday(4),
-      regExp: /^(?:周|星期)四(.*)/,
+      regExp: /^(?:周|星期)四|thursday(.*)/i,
     },
     {
       startAt: dayjs().isSameOrBefore(dayjs().weekday(5)) ? dayjs().weekday(5).subtract(1, "week") : dayjs().weekday(5),
-      regExp: /^(?:周|星期)五(.*)/,
+      regExp: /^(?:周|星期)五|friday(.*)/i,
     },
     {
       startAt: dayjs().isSameOrBefore(dayjs().weekday(6)) ? dayjs().weekday(6).subtract(1, "week") : dayjs().weekday(6),
-      regExp: /^(?:周|星期)六(.*)/,
+      regExp: /^(?:周|星期)六|saturday(.*)/i,
     },
     {
       startAt: dayjs().isSameOrBefore(dayjs().weekday(7)) ? dayjs().weekday(7).subtract(1, "week") : dayjs().weekday(7),
-      regExp: /^(?:周|星期)[天日](.*)/,
+      regExp: /^(?:周|星期)[天日]|sunday(.*)/i,
     },
     {
       startAt: dayjs().add(1, "days"),
-      regExp: /^(?:明[天日]|y(?:ester)?day?)(.*)/,
+      regExp: /^(?:明[天日]|tomorrow)(.*)/i,
     },
     {
       startAt: dayjs().add(2, "days"),
-      regExp: /^(?:[后後][天日]|(?:the)?d(?:ay)?a(?:fter)?t(?:omrrow)?)(.*)/,
+      regExp: /^(?:[后後][天日]|(?:the)?d(?:ay)?a(?:fter)?t(?:omrrow)?)(.*)/i,
     },
   ]
 }
@@ -109,21 +109,21 @@ const patterns = [
 const patternSize = Object.keys(patterns).length
 
 /**
- * 预处理日期字符串
- * @param {string} date 原始日期字符串
+ * Preprocess date string
+ * @param {string} date Original date string
  */
 function toDate(date: string) {
   return date
     .toLowerCase()
-    .replace(/(^an?\s)|(\san?\s)/g, "1") // 替换 `a` 和 `an` 为 `1`
-    .replace(/几|幾/g, "3") // 如 `几秒钟前` 视作 `3秒钟前`
+    .replace(/(^an?\s)|(\san?\s)/g, "1") // Replace `a` and `an` with `1`
+    .replace(/几|幾/g, "3") // Treat expressions like `几秒钟前` as `3秒钟前` (a few seconds ago)
     .replace(/[\s,]/g, "")
-} // 移除所有空格
+} // Remove all spaces
 
 /**
- * 将 `['\d+时', ..., '\d+秒']` 转换为 `{ hours: \d+, ..., seconds: \d+ }`
- * 用于描述时间长度
- * @param {Array.<string>} matches 所有匹配结果
+ * Convert `['\d+hours', ..., '\d+seconds']` to `{ hours: \d+, ..., seconds: \d+ }`
+ * Used to describe time duration
+ * @param {Array.<string>} matches All matching results
  */
 function toDurations(matches: string[]) {
   const durations: Record<string, string> = {}
@@ -144,7 +144,7 @@ function toDurations(matches: string[]) {
 export const parseDate = (date: string | number, ...options: any) => dayjs(date, ...options).toDate()
 
 export function parseRelativeDate(date: string, timezone: string = "UTC") {
-  if (date === "刚刚") return new Date()
+  if (date === "刚刚" || date === "just now") return new Date()
   // 预处理日期字符串 date
 
   const theDate = toDate(date)

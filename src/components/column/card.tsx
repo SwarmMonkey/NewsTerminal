@@ -2,14 +2,14 @@ import type { NewsItem, SourceID, SourceResponse } from "@shared/types"
 import { useQuery } from "@tanstack/react-query"
 import { AnimatePresence, motion, useInView } from "framer-motion"
 import { useWindowSize } from "react-use"
-import { forwardRef, useImperativeHandle } from "react"
+import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from "react"
 import { OverlayScrollbar } from "../common/overlay-scrollbar"
-import { safeParseString } from "~/utils"
+import { safeParseString, translateText } from "~/utils"
 
 export interface ItemsProps extends React.HTMLAttributes<HTMLDivElement> {
   id: SourceID
   /**
-   * 是否显示透明度，拖动时原卡片的样式
+   * Whether to show opacity, the style of the original card when dragging
    */
   isDragging?: boolean
   setHandleRef?: (ref: HTMLElement | null) => void
@@ -104,6 +104,11 @@ function NewsCard({ id, setHandleRef }: NewsCardProps) {
 
   const { isFocused, toggleFocus } = useFocusWith(id)
 
+  // Get translations for source information
+  const translatedSourceName = translateText(sources[id].name)
+  const translatedSourceTitle = sources[id].title ? translateText(sources[id].title) : ""
+  const translatedSourceDesc = sources[id].desc ? translateText(sources[id].desc) : ""
+
   return (
     <>
       <div className={$("flex justify-between mx-2 mt-0 mb-2 items-center")}>
@@ -112,7 +117,7 @@ function NewsCard({ id, setHandleRef }: NewsCardProps) {
             className={$("w-8 h-8 rounded-full bg-cover")}
             target="_blank"
             href={sources[id].home}
-            title={sources[id].desc}
+            title={translatedSourceDesc || sources[id].desc}
             style={{
               backgroundImage: `url(/icons/${id.split("-")[0]}.png)`,
             }}
@@ -121,11 +126,11 @@ function NewsCard({ id, setHandleRef }: NewsCardProps) {
             <span className="flex items-center gap-2">
               <span
                 className="text-xl font-bold"
-                title={sources[id].desc}
+                title={translatedSourceDesc || sources[id].desc}
               >
-                {sources[id].name}
+                {translatedSourceName}
               </span>
-              {sources[id]?.title && <span className={$("text-sm", `color-${sources[id].color} bg-base op-80 bg-op-50! px-1 rounded`)}>{sources[id].title}</span>}
+              {sources[id]?.title && <span className={$("text-sm", `color-${sources[id].color} bg-base op-80 bg-op-50! px-1 rounded`)}>{translatedSourceTitle}</span>}
             </span>
             <span className="text-xs op-70"><UpdatedTime isError={isError} updatedTime={data?.updatedTime} /></span>
           </span>
@@ -172,9 +177,9 @@ function NewsCard({ id, setHandleRef }: NewsCardProps) {
 
 function UpdatedTime({ isError, updatedTime }: { updatedTime: any, isError: boolean }) {
   const relativeTime = useRelativeTime(updatedTime ?? "")
-  if (relativeTime) return `${relativeTime}更新`
-  if (isError) return "获取失败"
-  return "加载中..."
+  if (relativeTime) return `Updated ${relativeTime}`
+  if (isError) return "Failed to load"
+  return "Loading..."
 }
 
 function DiffNumber({ diff }: { diff: number }) {
@@ -227,9 +232,19 @@ function NewsUpdatedTime({ date }: { date: string | number }) {
 }
 function NewsListHot({ items }: { items: NewsItem[] }) {
   const { width } = useWindowSize()
+  const translatedItems = items.map(item => ({
+    ...item,
+    title: translateText(item.title),
+    extra: {
+      ...item.extra,
+      hover: item.extra?.hover ? translateText(item.extra.hover) : undefined,
+      info: item.extra?.info ? translateText(item.extra.info) : item.extra?.info,
+    },
+  }))
+
   return (
     <ol className="flex flex-col gap-2">
-      {items?.map((item, i) => (
+      {translatedItems?.map((item, i) => (
         <a
           href={width < 768 ? item.mobileUrl || item.url : item.url}
           target="_blank"
@@ -260,9 +275,19 @@ function NewsListHot({ items }: { items: NewsItem[] }) {
 
 function NewsListTimeLine({ items }: { items: NewsItem[] }) {
   const { width } = useWindowSize()
+  const translatedItems = items.map(item => ({
+    ...item,
+    title: translateText(item.title),
+    extra: {
+      ...item.extra,
+      hover: item.extra?.hover ? translateText(item.extra.hover) : undefined,
+      info: item.extra?.info ? translateText(item.extra.info) : item.extra?.info,
+    },
+  }))
+
   return (
     <ol className="border-s border-neutral-400/50 flex flex-col ml-1">
-      {items?.map(item => (
+      {translatedItems?.map(item => (
         <li key={`${item.id}-${item.pubDate || item?.extra?.date || ""}`} className="flex flex-col">
           <span className="flex items-center gap-1 text-neutral-400/50 ml--1px">
             <span className="">-</span>

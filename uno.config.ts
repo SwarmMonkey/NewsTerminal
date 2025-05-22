@@ -29,6 +29,13 @@ export default defineConfig({
     "Liberation Mono", "Courier New", monospace; `,
       },
     ],
+    [
+      "font-brand-title",
+      {
+        "font-family": `"Montserrat", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+    Roboto, "Helvetica Neue", Arial, sans-serif; `,
+      },
+    ],
   ],
   shortcuts: {
     "color-base": "color-neutral-800 dark:color-neutral-300",
