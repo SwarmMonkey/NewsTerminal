@@ -1,4 +1,6 @@
 import type { SourceID, SourceResponse } from "@shared/types"
+import sources from "@shared/sources"
+import { createError, defineEventHandler, readBody } from "h3"
 import { getCacheTable } from "#/database/cache"
 
 export default defineEventHandler(async (event) => {
@@ -16,7 +18,12 @@ export default defineEventHandler(async (event) => {
         updatedTime: now - cache.updated < sources[cache.id].interval ? now : cache.updated,
       })) as SourceResponse[]
     }
-  } catch {
-    //
+  } catch (e) {
+    // Log the error for better debugging
+    console.error("Error fetching sources:", e)
+    throw createError({
+      statusCode: 500,
+      message: e instanceof Error ? e.message : "Internal Server Error",
+    })
   }
 })
