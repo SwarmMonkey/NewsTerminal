@@ -12,6 +12,9 @@ import { useFocusWith } from "~/hooks/useFocus"
 import { useRefetch } from "~/hooks/useRefetch"
 import { useRelativeTime } from "~/hooks/useRelativeTime"
 
+// Define constant for localStorage key prefix
+const LOCAL_STORAGE_KEY_PREFIX = "source-"
+
 export interface ItemsProps extends React.HTMLAttributes<HTMLDivElement> {
   id: SourceID
   /**
@@ -66,6 +69,28 @@ interface ApiError {
   message?: string
 }
 
+// Helper function to get source data from localStorage
+function getLocalStorageSource(id: SourceID): SourceResponse | null {
+  try {
+    const data = localStorage.getItem(`${LOCAL_STORAGE_KEY_PREFIX}${id}`)
+    if (data) {
+      return JSON.parse(data) as SourceResponse
+    }
+  } catch (e) {
+    console.error(`Failed to retrieve data from localStorage for ${id}:`, e)
+  }
+  return null
+}
+
+// Helper function to save source data to localStorage
+function saveLocalStorageSource(id: SourceID, data: SourceResponse): void {
+  try {
+    localStorage.setItem(`${LOCAL_STORAGE_KEY_PREFIX}${id}`, JSON.stringify(data))
+  } catch (e) {
+    console.error(`Failed to save data to localStorage for ${id}:`, e)
+  }
+}
+
 function NewsCard({ id, setHandleRef }: NewsCardProps) {
   const { refresh } = useRefetch()
   const { data, isFetching, isError, error } = useQuery({
@@ -75,28 +100,46 @@ function NewsCard({ id, setHandleRef }: NewsCardProps) {
       console.log(`Fetching data for source: ${id}`)
       let url = `/s?id=${id}`
       const headers: Record<string, any> = {}
+
+      // Check if we need to force a refresh
       if (refetchSources.has(id)) {
         url = `/s?id=${id}&latest`
         const jwt = safeParseString(localStorage.getItem("jwt"))
         if (jwt) headers.Authorization = `Bearer ${jwt}`
         refetchSources.delete(id)
-      } else if (cacheSources.has(id)) {
-        // wait animation
+      } else if (cacheSources.has(id)) { // Check if we have cached data in memory
         console.log(`Using cached data for source: ${id}`)
         await delay(200)
-        return cacheSources.get(id)
+        const cachedData = cacheSources.get(id)
+        // Preemptively save to localStorage for fallback
+        if (cachedData) saveLocalStorageSource(id, cachedData)
+        return cachedData
+      } else { // Check localStorage as last resort before API call
+        const localData = getLocalStorageSource(id)
+        if (localData?.items?.length) {
+          console.log(`Using localStorage data for source: ${id}`)
+          // If we have local data, save it to the memory cache too
+          cacheSources.set(id, localData)
+          return localData
+        }
       }
 
       try {
         console.log(`Making API request to: ${url}`)
         const response: SourceResponse = await myFetch(url, {
           headers,
+          // Add timeout to prevent long-hanging requests
+          timeout: 10000,
+          // Add retry for production resilience
+          retry: 3,
         })
         console.log(`API response for ${id}:`, response)
 
-        function diff() {
-          try {
-            if (response.items && sources[id].type === "hottest" && cacheSources.has(id)) {
+        // Process the data
+        if (response?.items?.length) {
+          // Add diff information for hottest sources
+          if (sources[id].type === "hottest" && cacheSources.has(id)) {
+            try {
               response.items.forEach((item, i) => {
                 const o = cacheSources.get(id)!.items.findIndex(k => k.id === item.id)
                 item.extra = {
@@ -104,16 +147,18 @@ function NewsCard({ id, setHandleRef }: NewsCardProps) {
                   diff: o === -1 ? undefined : o - i,
                 }
               })
+            } catch (e) {
+              console.error(`Error calculating diffs for ${id}:`, e)
             }
-          } catch (e) {
-            console.error(e)
           }
+
+          // Save to memory cache and localStorage
+          cacheSources.set(id, response)
+          saveLocalStorageSource(id, response)
+          return response
+        } else {
+          throw new Error("Empty response items")
         }
-
-        diff()
-
-        cacheSources.set(id, response)
-        return response
       } catch (error) {
         console.error(`API error for ${id}:`, error)
         const apiError = error as ApiError
@@ -124,31 +169,36 @@ function NewsCard({ id, setHandleRef }: NewsCardProps) {
           console.error(`No response received, request:`, apiError.request)
         }
 
-        // Return a fallback response instead of throwing to prevent UI from showing "Failed to load"
-        // At least return a properly formatted empty response
-        const fallbackResponse: SourceResponse = {
-          status: "cache",
-          id,
-          updatedTime: Date.now(),
-          items: [],
-        }
-
-        // If there's cached data, use it instead of an empty array
+        // Fallback chain:
+        // 1. Try memory cache first
         if (cacheSources.has(id)) {
           console.log(`Using cached data as fallback for failed API request to ${id}`)
           return cacheSources.get(id)
         }
 
-        // Otherwise use the empty fallback
-        return fallbackResponse
+        // 2. Try localStorage next
+        const localData = getLocalStorageSource(id)
+        if (localData?.items?.length) {
+          console.log(`Using localStorage as fallback for failed API request to ${id}`)
+          return localData
+        }
+
+        // 3. Last resort - empty response
+        return {
+          status: "cache",
+          id,
+          updatedTime: Date.now(),
+          items: [],
+        }
       }
     },
     placeholderData: prev => prev,
     staleTime: Infinity,
     refetchOnMount: false,
-    refetchOnReconnect: false,
+    refetchOnReconnect: true, // Try refetching when connection comes back
     refetchOnWindowFocus: false,
-    retry: false,
+    retry: 2, // Allow retries for resilience
+    retryDelay: attempt => Math.min(attempt > 1 ? 2000 : 1000, 30 * 1000), // Exponential backoff capped at 30 seconds
   })
 
   const { isFocused, toggleFocus } = useFocusWith(id)
