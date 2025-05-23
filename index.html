@@ -1,10 +1,11 @@
 <!doctype html>
-<html lang="en">
+<html lang="zh">
 
 <head>
   <meta charset="UTF-8" />
   <link rel="icon" type="image/png" href="/NewsTerminal.png" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="Content-Language" content="zh" />
   <!-- SEO Meta Tags -->
   <meta name="description" content="News Terminal - Real-time news aggregator providing an elegant reading experience for global headlines" />
   <meta name="keywords" content="news,tech news,real-time news,news aggregator,News Terminal" />
@@ -68,6 +69,69 @@
       localStorage.setItem("jwt", JSON.stringify(query.get("jwt")))
       window.history.replaceState({}, document.title, window.location.pathname)
     }
+  </script>
+  
+  <script>
+    // Prompt users to translate page to English
+    document.addEventListener('DOMContentLoaded', function() {
+      // Check if user's preferred language is not Chinese
+      const userLang = navigator.language || navigator.userLanguage;
+      if (!userLang.startsWith('zh')) {
+        // Small delay to ensure the browser's translation feature has time to detect the page language
+        setTimeout(function() {
+          // This will trigger most browsers' translation prompt if it hasn't already appeared
+          const translationMessage = document.createElement('div');
+          translationMessage.style.position = 'fixed';
+          translationMessage.style.top = '10px';
+          translationMessage.style.left = '50%';
+          translationMessage.style.transform = 'translateX(-50%)';
+          translationMessage.style.backgroundColor = 'rgba(0, 0, 0, 0.8)';
+          translationMessage.style.color = 'white';
+          translationMessage.style.padding = '10px 20px';
+          translationMessage.style.borderRadius = '5px';
+          translationMessage.style.zIndex = '9999';
+          translationMessage.style.fontSize = '14px';
+          translationMessage.textContent = 'This page is in Chinese. Would you like to translate it?';
+          
+          const translateBtn = document.createElement('button');
+          translateBtn.textContent = 'Translate to English';
+          translateBtn.style.marginLeft = '10px';
+          translateBtn.style.padding = '5px 10px';
+          translateBtn.style.backgroundColor = '#F14D42';
+          translateBtn.style.border = 'none';
+          translateBtn.style.borderRadius = '3px';
+          translateBtn.style.color = 'white';
+          translateBtn.style.cursor = 'pointer';
+          
+          translateBtn.onclick = function() {
+            // This will attempt to trigger Google Chrome's translation feature
+            const iframe = document.createElement('iframe');
+            iframe.setAttribute('src', 'https://translate.google.com/translate?sl=zh&tl=en&u=' + encodeURIComponent(window.location.href));
+            iframe.style.display = 'none';
+            document.body.appendChild(iframe);
+            setTimeout(() => document.body.removeChild(iframe), 1000);
+            
+            // Remove the message
+            document.body.removeChild(translationMessage);
+          };
+          
+          const closeBtn = document.createElement('button');
+          closeBtn.textContent = '✕';
+          closeBtn.style.marginLeft = '10px';
+          closeBtn.style.backgroundColor = 'transparent';
+          closeBtn.style.border = 'none';
+          closeBtn.style.color = 'white';
+          closeBtn.style.cursor = 'pointer';
+          closeBtn.onclick = function() {
+            document.body.removeChild(translationMessage);
+          };
+          
+          translationMessage.appendChild(translateBtn);
+          translationMessage.appendChild(closeBtn);
+          document.body.appendChild(translationMessage);
+        }, 1500);
+      }
+    });
   </script>
   <title>News Terminal</title>
 </head>
