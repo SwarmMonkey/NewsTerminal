@@ -1,4 +1,3 @@
-import process from "node:process"
 import type { VitePWAOptions } from "vite-plugin-pwa"
 import { VitePWA } from "vite-plugin-pwa"
 
@@ -10,6 +9,9 @@ const pwaOption: Partial<VitePWAOptions> = {
     short_name: "NewsNow",
     description: "Elegant reading of real-time and hottest news",
     theme_color: "#F14D42",
+    display: "browser",
+    display_override: ["browser"],
+    start_url: "/?mode=browser",
     icons: [
       {
         src: "pwa-192x192.png",
@@ -37,12 +39,17 @@ const pwaOption: Partial<VitePWAOptions> = {
   },
   workbox: {
     navigateFallbackDenylist: [/^\/api/],
+    skipWaiting: false,
+    clientsClaim: false,
   },
+  registerType: "prompt",
   devOptions: {
-    enabled: process.env.SW_DEV === "true",
+    enabled: false,
     type: "module",
     navigateFallback: "index.html",
   },
+  disable: true,
+  injectRegister: false,
 }
 
 export default function pwa() {

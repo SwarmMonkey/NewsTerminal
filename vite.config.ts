@@ -7,7 +7,7 @@ import unimport from "unimport/unplugin"
 import dotenv from "dotenv"
 import nitro from "./nitro.config"
 import { projectDir } from "./shared/dir"
-import pwa from "./pwa.config"
+// import pwa from "./pwa.config"
 
 dotenv.config({
   path: join(projectDir, ".env.server"),
@@ -39,7 +39,7 @@ export default defineConfig({
     }),
     unocss(),
     react(),
-    pwa(),
+    // pwa(),
     nitro(),
   ],
 })

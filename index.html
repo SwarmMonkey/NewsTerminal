@@ -9,6 +9,15 @@
   <meta name="google" content="notranslate" id="google-notranslate">
   <meta name="mobile-web-app-capable" content="no">
   <meta name="apple-mobile-web-app-capable" content="no">
+  <meta name="application-name" content="no">
+  <meta name="msapplication-starturl" content="no">
+  <meta name="msapplication-navbutton-color" content="no">
+  <meta name="msapplication-tap-highlight" content="no">
+  <meta name="format-detection" content="telephone=no,date=no,address=no,email=no">
+  <!-- PWA prevention -->
+  <meta name="msapplication-config" content="none">
+  <meta name="theme-color" media="(prefers-color-scheme: light)" content="white">
+  <meta name="theme-color" media="(prefers-color-scheme: dark)" content="black">
   <!-- SEO Meta Tags -->
   <meta name="description" content="News Terminal - Real-time news aggregator providing an elegant reading experience for global headlines" />
   <meta name="keywords" content="news,tech news,real-time news,news aggregator,News Terminal" />
@@ -50,6 +59,34 @@
     function gtag() { dataLayer.push(arguments); }
     gtag('js', new Date());
     gtag('config', 'G-EL9HHYE5LC');
+  </script>
+
+  <!-- Unregister Service Worker -->
+  <script>
+    // Unregister any existing service workers to prevent PWA installation
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.getRegistrations().then(function(registrations) {
+        for (let registration of registrations) {
+          registration.unregister();
+          console.log('Service worker unregistered');
+        }
+      });
+      
+      // Clear any PWA-related cache
+      caches.keys().then(function(cacheNames) {
+        return Promise.all(
+          cacheNames.map(function(cacheName) {
+            return caches.delete(cacheName);
+          })
+        );
+      });
+      
+      // Reset before-install-prompt event
+      window.addEventListener('beforeinstallprompt', function(e) {
+        e.preventDefault();
+        return false;
+      });
+    }
   </script>
 
   <script>
