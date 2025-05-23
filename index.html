@@ -2,6 +2,43 @@
 <html lang="zh-CN">
 
 <head>
+  <!-- Immediately unregister any service workers -->
+  <script>
+    // Aggressive service worker removal - runs before anything else
+    (function() {
+      // Remove any existing service workers
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.getRegistrations().then(function(registrations) {
+          for (let registration of registrations) {
+            registration.unregister().then(function() {
+              console.log('ServiceWorker unregistered');
+              
+              // Force reload after unregistration to ensure clean state
+              if (registrations.length > 0 && window.location.search.indexOf('pwa_cleaned') === -1) {
+                window.location.href = window.location.href + (window.location.search ? '&' : '?') + 'pwa_cleaned=1';
+              }
+            });
+          }
+        });
+      }
+
+      // Clear all caches
+      if ('caches' in window) {
+        caches.keys().then(function(names) {
+          for (let name of names) {
+            caches.delete(name);
+          }
+        });
+      }
+
+      // Prevent installation prompt
+      window.addEventListener('beforeinstallprompt', function(e) {
+        e.preventDefault();
+        return false;
+      });
+    })();
+  </script>
+
   <meta charset="UTF-8" />
   <link rel="icon" type="image/png" href="/NewsTerminal.png" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -18,6 +55,10 @@
   <meta name="msapplication-config" content="none">
   <meta name="theme-color" media="(prefers-color-scheme: light)" content="white">
   <meta name="theme-color" media="(prefers-color-scheme: dark)" content="black">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <!-- Explicitly tell browsers this is not a PWA -->
+  <meta name="app-capable" content="no">
+  <meta http-equiv="cleartype" content="no">
   <!-- SEO Meta Tags -->
   <meta name="description" content="News Terminal - Real-time news aggregator providing an elegant reading experience for global headlines" />
   <meta name="keywords" content="news,tech news,real-time news,news aggregator,News Terminal" />
