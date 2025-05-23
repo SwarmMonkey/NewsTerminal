@@ -47,7 +47,7 @@ For deployments without login and caching:
 
 ### Cloudflare Page Configuration
 
-- Build command: `pnpm run build`
+- Build command: `npm run build`
 - Output directory: `dist/output/public`
 
 ### GitHub OAuth Setup
