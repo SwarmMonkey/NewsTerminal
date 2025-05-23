@@ -58,9 +58,6 @@ export function Header() {
         <span className="hidden md:(inline-block)">
           <NavBar />
         </span>
-        <Link to="/api-test" className="ml-4 text-sm text-primary-600 dark:text-primary hover:underline">
-          API Test
-        </Link>
       </span>
       <span className="justify-self-end flex gap-2 items-center text-xl text-primary-600 dark:text-primary h-full">
         <GoTop />
