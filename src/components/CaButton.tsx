@@ -10,7 +10,8 @@ export function CaButton({ caCode }: CaButtonProps) {
   const [copied, setCopied] = useState(false)
 
   const handleCopy = () => {
-    navigator.clipboard.writeText(caCode)
+    const codeWithoutPrefix = caCode.includes("ca:") ? caCode.split("ca:")[1] : caCode
+    navigator.clipboard.writeText(codeWithoutPrefix)
     setCopied(true)
     setTimeout(() => setCopied(false), 2000)
   }
