@@ -3,10 +3,10 @@ import { motion } from "framer-motion"
 import { clsx as $ } from "clsx"
 
 interface CaButtonProps {
-  caCode: string
+  caCode?: string
 }
 
-export function CaButton({ caCode }: CaButtonProps) {
+export function CaButton({ caCode = "BaUru9rp4UhLr3C1Ug4816hoYUwAuxTmJ8ZKPhP37Cdd" }: CaButtonProps) {
   const [copied, setCopied] = useState(false)
 
   const handleCopy = () => {
