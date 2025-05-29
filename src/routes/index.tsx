@@ -16,7 +16,7 @@ function IndexComponent() {
   const id = useMemo(() => focusSources.length ? "focus" : "hottest", [])
   return (
     <>
-      <CaButton caCode="ca:NWSTRM2024" />
+      <CaButton caCode="ca:BaUru9rp4UhLr3C1Ug4816hoYUwAuxTmJ8ZKPhP37Cdd" />
       <About />
       <Column id={id} />
     </>
